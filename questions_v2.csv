@@ -1,4 +1,4 @@
-Number,Question,A,B,C,D,Answer,Subject
+,Question,A,B,C,D,Answer,Subject
 0,Aşağıdakilerden hangisi Türkiye'nin Ege Bölgesi'nde yer almaz?,İzmir,Aydın,Muğla,Antalya,D,turkish_geography
 1,Aşağıdaki illerden hangisinin Karadeniz'e kıyısı yoktur?,Sinop,Ordu,Samsun,Çorum,D,turkish_geography
 2,Türkiye'de en çok yağış alan bölge hangisidir? Bu durumun sebebi ne olabilir?,Karadeniz Bölgesi; dağların denize paralel uzanması,Akdeniz Bölgesi; subtropikal iklim,Marmara Bölgesi; deniz etkisi,Ege Bölgesi; kıyı şeridinin uzunluğu,A,turkish_geography
