@@ -10,6 +10,7 @@ import google.generativeai as genai
 import numpy as np
 import pandas as pd
 from anthropic import Anthropic
+from groq import Groq
 from openai import OpenAI
 
 choices = ["A", "B", "C", "D"]
@@ -24,6 +25,37 @@ class LLMWrapper(ABC):
     @abstractmethod
     def generate_response(self, messages: List[Dict[str, str]]) -> str:
         pass
+
+
+class LlamaWrapper(LLMWrapper):
+    def __init__(self, model: str, system_prompt: str):
+        super().__init__(system_prompt)
+        self.model_name = model
+        self.client = Groq()
+
+    def generate_response(self, messages: List[Dict[str, str]]) -> str:
+        # Prepend the system prompt to the messages
+        full_messages = [{"role": "system", "content": self.system_prompt}] + messages
+
+        try:
+            chat_completion = self.client.chat.completions.create(
+                messages=full_messages,
+                model=self.model_name,
+                temperature=0
+                # top_k = 0.1
+                # We observed repetition issues while testing
+                # https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct/discussions/32
+                # https://www.reddit.com/r/SillyTavernAI/comments/1cvzv32/llama_3_just_keeps_repeating_the_same_description/
+                # even after playing with temperature/top_k/prompts, it is still there and affects precision
+            )
+            ai_response = chat_completion.choices[0].message.content
+            print('Question: ' + messages.pop()["content"])
+            print('LLM RESPONSE: ' + ai_response)
+            return ai_response
+        except Exception as e:
+            print(f"Error: {e}. Retrying in 1 second...")
+            time.sleep(1)
+            return self.generate_response(messages)  # Retry the request
 
 
 class ChatGPTWrapper(LLMWrapper):
@@ -46,9 +78,37 @@ class ChatGPTWrapper(LLMWrapper):
                     messages=messages,
                     temperature=0,
                 )
-                print(messages)
+                print('Question: ' + messages.pop()["content"])
                 print('LLM RESPONSE:' + response.choices[0].message.content)
                 return response.choices[0].message.content
+            except Exception as e:
+                print(f"Error: {e}. Retrying in 1 second...")
+                time.sleep(1)
+
+
+class OpenRouterWrapper(LLMWrapper):
+    def __init__(self, model: str, system_prompt: str):
+        super().__init__(system_prompt)
+        self.model = model
+        self.client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+        )
+
+    def generate_response(self, messages: List[Dict[str, str]]) -> str:
+        full_messages = [{"role": "system", "content": self.system_prompt}] + messages
+
+        while True:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=full_messages,
+                    temperature=0,
+                )
+                ai_response = response.choices[0].message.content
+                print('Question: ' + messages[-1]["content"])
+                print('LLM RESPONSE: ' + ai_response)
+                return ai_response
             except Exception as e:
                 print(f"Error: {e}. Retrying in 1 second...")
                 time.sleep(1)
@@ -122,6 +182,10 @@ def get_llm_wrapper(provider: str, model: str, system_prompt: str) -> LLMWrapper
         return ClaudeWrapper(model, system_prompt)
     elif provider == "google":
         return GeminiWrapper(model, system_prompt)
+    elif provider == "llama":
+        return LlamaWrapper(model, system_prompt)
+    elif provider == "openrouter":
+        return OpenRouterWrapper(model, system_prompt)
     else:
         raise ValueError(f"Unsupported provider: {provider}")
 
@@ -148,9 +212,9 @@ def eval(timestamp, args, llm_wrapper: LLMWrapper, df):
 
     for i, row in df.iterrows():
         prompt_end = format_example(row, include_answer=False)
-        ##train_prompt = gen_prompt(df.iloc[:args.ntrain], args.ntrain)
-        ##In context learning doesn't work with claude. doesn't even bother.
-        ##It cost my money and sanity.
+        # train_prompt = gen_prompt(df.iloc[:args.ntrain], args.ntrain)
+        # In context learning doesn't work with Claude. Doesn't even bother trying.
+        # It cost my money and sanity.
 
         # messages = [
         #    {"role": "user", "content": train_prompt + prompt_end + "Answer:"}
@@ -190,8 +254,12 @@ def main(args):
         system_prompt = "You are Claude, an AI assistant created by Anthropic. Answer multiple choice questions accurately."
     elif args.provider == "google":
         system_prompt = "You are a helpful assistant that answers multiple choice questions accurately."
+    elif args.provider == "llama":
+        system_prompt = "You are a helpful assistant that answers multiple choice questions and clearly specify which choice is correct. Do not repeat your descriptions."
+    elif args.provider == "openrouter":
+        system_prompt = "You are a helpful assistant that answers multiple choice questions and clearly specify which choice is correct. Do not repeat your descriptions."
     else:
-        system_prompt = "You are a helpful assistant that answers multiple choice questions."
+        system_prompt = "You are a helpful assistant that answers multiple choice questions accurately."
 
     llm_wrapper = get_llm_wrapper(args.provider, args.model, system_prompt)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -246,10 +314,14 @@ def save_llm_answer(timestamp, dir, provider, model, pred):
     args (argparse.Namespace): Command-line arguments containing provider and model
     pred (str): The LLM's prediction/answer
     """
+    # edge case for windows naming
+    if model == "meta-llama/llama-3.1-8b-instruct:free":
+        model = "llama-3.1-8b-instruct"
 
     filename = f"answers_{provider}_{model}_{timestamp}.txt"
-
+    os.path.join(dir)
     # Ensure the directory exists
+    os.makedirs(os.path.dirname(os.path.join(dir, "answers")), exist_ok=True)
     os.makedirs(os.path.dirname(os.path.join(dir, filename)), exist_ok=True)
 
     # Append the prediction to the file
@@ -263,7 +335,7 @@ if __name__ == "__main__":
                         help="Path to the input CSV file")
     parser.add_argument("--ntrain", "-k", type=int, default=0, help="Number of examples to use for in-context learning")
     parser.add_argument("--save_dir", "-s", type=str, default="results", help="Directory to save results")
-    parser.add_argument("--provider", "-p", choices=["chatgpt", "claude", "google"], default="chatgpt",
+    parser.add_argument("--provider", "-p", choices=["chatgpt", "claude", "google", "llama", "openrouter"],
                         help="LLM provider to use")
     parser.add_argument("--model", "-m", type=str, help="Model name for the chosen provider")
     args = parser.parse_args()
