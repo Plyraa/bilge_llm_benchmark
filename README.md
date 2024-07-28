@@ -35,7 +35,7 @@ python .\complete-llm-evaluation.py -i diff_questions.csv -p llama -m llama-3.1-
 ```
 
 Our Python script supports OpenRouter so you can evaluate BİLGE on any model via OpenRouter. For instance, following command would evaluate BİLGE on Qwen 2 72B. <br/>
-`python .\complete-llm-evaluation.py -i diff_questions.csv -p openrouter -m qwen/qwen-2-72b-instruct`
+`python .\complete-llm-evaluation.py -i diff_questions.csv -p openrouter -m qwen/qwen-2-72b-instruct`<br/>
 You need to setup OPENROUTER_API_KEY before using OpenRouter as a provider. Also our implementation is calling OpenRouter via its OpenAI integration.
 
 
