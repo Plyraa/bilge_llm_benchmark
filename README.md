@@ -34,9 +34,11 @@ python .\complete-llm-evaluation.py -i diff_questions.csv -p google -m gemini-1.
 python .\complete-llm-evaluation.py -i diff_questions.csv -p llama -m llama-3.1-8b-instant
 ```
 
-Our Python script supports OpenRouter too, you can evaluate BİLGE on any model via OpenRouter. For instance, following command would evaluate BİLGE on Qwen 2 72B. 
-```python .\complete-llm-evaluation.py -i diff_questions.csv -p openrouter -m qwen/qwen-2-72b-instruct```
+Our Python script supports OpenRouter too, you can evaluate BİLGE on any model via OpenRouter. For instance, following command would evaluate BİLGE on Qwen 2 72B.
 You need to setup OPENROUTER_API_KEY before using OpenRouter as a provider. Also our implementation is calling OpenRouter via its OpenAI integration.
+`python .\complete-llm-evaluation.py -i diff_questions.csv -p openrouter -m qwen/qwen-2-72b-instruct`
+
+
 
 
 Evaluation script uses RegEx to parse LLM output, if model failed to provide a choice or denied to answer, it evaluates to False and choice 'X' in results file.
