@@ -194,7 +194,7 @@ Number,Question,A,B,C,D,Answer,Subject
 192,"Bir kürenin yüzey alanı 36π cm² ise, kürenin hacmi nedir?",36π cm³,48π cm³,72π cm³,64π cm³,A,hard_mathematics
 193,d/dx​(1/x​) nedir?,−(1/(x^2)),1/(x^2),2/(x^2),-(2/(x^2)),A,hard_mathematics
 194,Bir parabolün tepe noktası nasıl bulunur?,-b/2a, b/2a,-b/a,b/a,A,hard_mathematics
-195,Bir kürenin hacmi 500π cm³ ise, yüzey alanı yaklaşık kaç cm²'dir?,A) 542 cm², B) 138π cm², C) 176π cm², D) 208π cm²,D,hard_mathematics
+195,Bir kürenin hacmi 500π cm³ ise yüzey alanı yaklaşık kaç cm²'dir?,A) 542 cm², B) 138π cm², C) 176π cm², D) 208π cm²,D,hard_mathematics
 196,Bir kompleks sayının modülü nedir?,Gerçek kısmı,İmajiner kısmı,Karesi,Mutlak değeri,D,hard_mathematics
 197,"Bir matrisin determinantı sıfırsa, matris ne türdür?",Terslenebilir,Terslenemez,Simetrik,Ortogonal,B,hard_mathematics
 198,∫x(e^x)dx integrali nedir?,(e^x).(x-1) + C,e^x - (x.(e^x)) + C,(x.(e^x)) + e^x + C,e^x + (x.(e^x)) + C,A,hard_mathematics
