@@ -1,9 +1,19 @@
 BİLGE (Türkçe Bilgi ve İdrak Eğitimi) is a benchmark designed to evaluate the performance of large language models (LLMs) in Turkish. It addresses the gap in resources for assessing Turkish language understanding and factual knowledge. BİLGE includes diverse categories, mainly STEM, literature, history, geography, and philosophy, utilizing multiple-choice questions to challenge LLMs. BİLGE introduces elements such as intentionally badly-typed questions and common misconceptions to test model robustness.
 
-This repo is supposed to store evaluation script and our raw results as we tried to be easily replicable. Analysis of benchmark results are added as PNG tables, two of them is attached below:
+This repo is supposed to store evaluation script and our raw results as we tried to be easily replicable. Analysis of benchmark results are added as PNG tables, two of them are attached below:
 
-![All accuracy comparison](accuracy_all_1.png)
-![Accuracy vs cost matrix](accuracy_vs_cost_4.png)
+<p align="center">
+  <img src="https://github.com/Plyraa/bilge_llm_benchmark/blob/main/accuracy_all_1.png" width="80%" height="80%">
+  <br>
+  <em>Accuracy Comparison Across Models</em>
+</p>
+
+<p align="center">
+  <img src="https://github.com/Plyraa/bilge_llm_benchmark/blob/main/accuracy_vs_cost_4.png" width="80%" height="80%">
+  <br>
+  <em>Accuracy vs. Cost Analysis</em>
+</p>
+
 
 We tested BİLGE on most relevant models available:
 - GPT-4 Turbo
@@ -26,7 +36,7 @@ setx OPENAI_API_KEY='$YOUR_API_KEY'
 setx GROQ_API_KEY='$YOUR_API_KEY'
 ```
 
-Running following commands will give you our results, as all models are set to run at 0 temperature.
+Running following commands will give you replicable results. If you run another model, for fair comparison run at 0 temperature.
 ```
 python .\complete-llm-evaluation.py -i diff_questions.csv -p chatgpt -m gpt-4-turbo-2024-04-09
 python .\complete-llm-evaluation.py -i diff_questions.csv -p chatgpt -m gpt-4o-2024-05-13
