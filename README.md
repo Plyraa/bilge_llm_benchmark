@@ -1,6 +1,9 @@
 BİLGE (Türkçe Bilgi ve İdrak Eğitimi) is a benchmark designed to evaluate the performance of large language models (LLMs) in Turkish. It addresses the gap in resources for assessing Turkish language understanding and factual knowledge. BİLGE includes diverse categories, mainly STEM, literature, history, geography, and philosophy, utilizing multiple-choice questions to challenge LLMs. BİLGE introduces elements such as intentionally badly-typed questions and common misconceptions to test model robustness.
 
-This repo is supposed to store evaluation script and our raw results.
+This repo is supposed to store evaluation script and our raw results as we tried to be easily replicable. Analysis of benchmark results are added as PNG tables, two of them is attached below:
+
+![All accuracy comparison](accuracy_all_1.png)
+![Accuracy vs cost matrix](accuracy_vs_cost_4.png)
 
 We tested BİLGE on most relevant models available:
 - GPT-4 Turbo
@@ -11,9 +14,9 @@ We tested BİLGE on most relevant models available:
 - Gemini 1.5 Flash
 - Llama 3.1 7B
 
-To evaluate BİLGE on those models, we propose a script (complete-llm-evaluation.py) too!
+To evaluate BİLGE on those models, we propose a script (complete-llm-evaluation.py).
 
-To run the script, you will need to install needed libraries and API keys. We are using Groq for Llama 3.1 7B.
+To run the script, you will need to install needed libraries and API keys. 
 
 ```
 pip install requirements.txt
@@ -34,7 +37,7 @@ python .\complete-llm-evaluation.py -i diff_questions.csv -p google -m gemini-1.
 python .\complete-llm-evaluation.py -i diff_questions.csv -p llama -m llama-3.1-8b-instant
 ```
 
-Our Python script supports OpenRouter so you can evaluate BİLGE on any model via OpenRouter. For instance, following command would evaluate BİLGE on Qwen 2 72B. <br/>
+We are using Groq for Llama 3.1 7B. For other models, provided Python script supports OpenRouter so you can evaluate BİLGE on any model via OpenRouter. For instance, following command would evaluate BİLGE on Qwen 2 72B. <br/>
 `python .\complete-llm-evaluation.py -i diff_questions.csv -p openrouter -m qwen/qwen-2-72b-instruct`<br/>
 You need to setup OPENROUTER_API_KEY before using OpenRouter as a provider. Also our implementation is calling OpenRouter via its OpenAI integration.
 
